@@ -10,7 +10,7 @@ const USER_COLORS = {
 
 function UserBadge({ name, size = 'md', pulse = false }) {
   const c = USER_COLORS[name] || { color: '#888', dim: 'rgba(136,136,136,0.12)' };
-  const sz = size === 'lg' ? { w: 60, h: 60, f: 14 } : size === 'sm' ? { w: 40, h: 40, f: 10 } : { w: 50, h: 50, f: 10 };
+  const sz = size === 'lg' ? { w: 44, h: 44, f: 18 } : size === 'sm' ? { w: 28, h: 28, f: 12 } : { w: 36, h: 36, f: 14 };
   return (
     <div
       style={{
@@ -180,6 +180,68 @@ export default function DashboardPage() {
       </div>
     );
   }
+
+  if (status?.isSundayOff) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          background: 'var(--bg)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '0',
+          padding: '20px',
+          textAlign: 'center',
+        }}
+      >
+        <div
+          style={{
+            width: '80px',
+            height: '80px',
+            borderRadius: '20px',
+            background: 'rgba(245,166,35,0.1)',
+            border: '1px solid rgba(245,166,35,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '36px',
+            marginBottom: '24px',
+          }}
+        >
+          🌴
+        </div>
+        <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 8px', letterSpacing: '-0.02em' }}>
+          Sunday Off!
+        </h1>
+        <p style={{ color: 'var(--text-muted)', margin: '0 0 32px', fontSize: '15px' }}>
+          No tasks today. The app resumes Monday.
+        </p>
+        <div
+          style={{
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: '12px',
+            padding: '14px 24px',
+            marginBottom: '24px',
+          }}
+        >
+          <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', fontFamily: 'DM Mono, monospace' }}>
+            Logged in as{' '}
+            <span style={{ color: USER_COLORS[status.currentUser?.name]?.color, fontWeight: '700' }}>
+              {status.currentUser?.name}
+            </span>
+            {' '}· {status.today}
+          </p>
+        </div>
+        <button onClick={handleLogout} className="btn btn-ghost" style={{ fontSize: '14px' }}>
+          Sign Out
+        </button>
+      </div>
+    );
+  }
+
 
   const isMyTurnToWash = status?.currentUser?.name === status?.washer?.name;
   const isMyTurnToFill = status?.currentUser?.name === status?.nextFillUser;

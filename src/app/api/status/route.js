@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthSession } from '@/lib/session';
-import { getTodayWasherName, getNextFillUserName, formatDateLocal, getDayName } from '@/lib/taskLogic';
+import { getTodayWasherName, getNextFillUserName, formatDateLocal, getDayName, isSunday } from '@/lib/taskLogic';
 
 export async function GET() {
   try {
@@ -13,8 +13,18 @@ export async function GET() {
 
     const today = formatDateLocal();
     const dayName = getDayName();
-    const washerName = getTodayWasherName();
 
+    // Sunday — app is closed
+    if (isSunday()) {
+      return NextResponse.json({
+        isSundayOff: true,
+        today,
+        dayName,
+        currentUser: { id: session.user.id, name: session.user.name, email: session.user.email },
+      });
+    }
+
+    const washerName = getTodayWasherName();
     const washerUser = await prisma.user.findUnique({ where: { name: washerName } });
     if (!washerUser) {
       return NextResponse.json({ error: 'Washer user not found' }, { status: 500 });

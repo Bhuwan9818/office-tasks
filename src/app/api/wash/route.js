@@ -2,13 +2,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthSession } from '@/lib/session';
-import { getTodayWasherName, formatDateLocal } from '@/lib/taskLogic';
+import { getTodayWasherName, formatDateLocal, isSunday } from '@/lib/taskLogic';
 
 export async function POST() {
   try {
     const session = await getAuthSession();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (isSunday()) {
+      return NextResponse.json({ error: 'App is closed on Sundays. Enjoy your day off! 🌴' }, { status: 403 });
     }
 
     const today = formatDateLocal();
@@ -21,9 +25,14 @@ export async function POST() {
       );
     }
 
-    const dailyTask = await prisma.dailyTask.findUnique({ where: { date: today } });
+    const washerUser = await prisma.user.findUnique({ where: { name: washerName } });
+
+    // Auto-create DailyTask if it doesn't exist yet (first action of the day)
+    let dailyTask = await prisma.dailyTask.findUnique({ where: { date: today } });
     if (!dailyTask) {
-      return NextResponse.json({ error: 'Daily task not found. Refresh and try again.' }, { status: 404 });
+      dailyTask = await prisma.dailyTask.create({
+        data: { date: today, washerId: washerUser.id, isWashed: false },
+      });
     }
     if (dailyTask.isWashed) {
       return NextResponse.json({ error: 'Bottle already marked as washed today.' }, { status: 409 });
