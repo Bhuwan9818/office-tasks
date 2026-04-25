@@ -10,7 +10,7 @@ const USER_COLORS = {
 
 function UserBadge({ name, size = 'md', pulse = false }) {
   const c = USER_COLORS[name] || { color: '#888', dim: 'rgba(136,136,136,0.12)' };
-  const sz = size === 'lg' ? { w: 44, h: 44, f: 18 } : size === 'sm' ? { w: 28, h: 28, f: 12 } : { w: 36, h: 36, f: 14 };
+  const sz = size === 'lg' ? { w: 60, h: 60, f: 14 } : size === 'sm' ? { w: 40, h: 40, f: 12 } : { w: 50, h: 50, f: 10 };
   return (
     <div
       style={{
