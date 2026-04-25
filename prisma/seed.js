@@ -7,9 +7,9 @@ async function main() {
   console.log('Seeding database...');
 
   const users = [
-    { name: 'aman', email: 'aman@office.com', password: 'pass1234' },
-    { name: 'anjali', email: 'anjali@office.com', password: 'pass1234' },
-    { name: 'bhuwan', email: 'bhuwan@office.com', password: 'pass1234' },
+    { name: 'aman', email: 'aman@office.com', password: 'aman123' },
+    { name: 'anjali', email: 'anjali@office.com', password: 'anjali123' },
+    { name: 'bhuwan', email: 'bhuwan@office.com', password: 'bhuwan123' },
   ];
 
   for (const user of users) {
