@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique // aman, anjali, bhuwan
+  email      String    @unique
+  password   String
+  createdAt  DateTime  @default(now())
+  dailyTasks DailyTask[]
+  fillLogs   FillLog[]
+}
+
+model DailyTask {
+  id        Int      @id @default(autoincrement())
+  date      String   // YYYY-MM-DD format
+  washerId  Int
+  isWashed  Boolean  @default(false)
+  washedAt  DateTime?
+  washer    User     @relation(fields: [washerId], references: [id])
+  fillLogs  FillLog[]
+
+  @@unique([date])
+}
+
+model FillLog {
+  id          Int       @id @default(autoincrement())
+  date        String    // YYYY-MM-DD
+  userId      Int
+  orderIndex  Int       // sequential fill number for the day (1, 2, 3, ...)
+  filledAt    DateTime  @default(now())
+  dailyTaskId Int
+  user        User      @relation(fields: [userId], references: [id])
+  dailyTask   DailyTask @relation(fields: [dailyTaskId], references: [id])
+
+  @@unique([date, orderIndex])
+}
