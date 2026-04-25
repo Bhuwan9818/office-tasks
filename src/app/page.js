@@ -207,7 +207,7 @@ export default function LoginPage() {
         </div>
 
         {/* Hint */}
-        <div
+        {/* <div
           className="card"
           style={{ marginTop: '16px', padding: '14px 20px', background: 'var(--surface-2)' }}
         >
@@ -226,7 +226,7 @@ export default function LoginPage() {
             <br />
             Password: <strong style={{ color: 'var(--accent)' }}>pass1234</strong>
           </p>
-        </div>
+        </div> */}
       </div>
 
       <style>{`
