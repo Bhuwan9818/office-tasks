@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthSession } from '@/lib/session';
-import { getTodayWasherName, formatDateLocal, isSunday } from '@/lib/taskLogic';
+import { getTodayWasherName, formatDateLocal, getBlockReason } from '@/lib/taskLogic';
 
 export async function POST() {
   try {
@@ -11,31 +11,35 @@ export async function POST() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (isSunday()) {
-      return NextResponse.json({ error: 'App is closed on Sundays. Enjoy your day off! 🌴' }, { status: 403 });
+    // Block outside 9am–7pm and on Sundays
+    const block = getBlockReason();
+    if (block) {
+      return NextResponse.json({ error: block.message }, { status: 403 });
     }
 
     const today = formatDateLocal();
     const washerName = getTodayWasherName();
 
+    // Only today's assigned washer can mark washed
     if (session.user.name !== washerName) {
       return NextResponse.json(
-        { error: `Only ${washerName} can mark the bottle as washed today.` },
+        { error: `Only ${washerName} can wash the bottle today.` },
         { status: 403 }
       );
     }
 
     const washerUser = await prisma.user.findUnique({ where: { name: washerName } });
 
-    // Auto-create DailyTask if it doesn't exist yet (first action of the day)
+    // Auto-create DailyTask if needed
     let dailyTask = await prisma.dailyTask.findUnique({ where: { date: today } });
     if (!dailyTask) {
       dailyTask = await prisma.dailyTask.create({
         data: { date: today, washerId: washerUser.id, isWashed: false },
       });
     }
+
     if (dailyTask.isWashed) {
-      return NextResponse.json({ error: 'Bottle already marked as washed today.' }, { status: 409 });
+      return NextResponse.json({ error: 'Bottle is already marked as washed today.' }, { status: 409 });
     }
 
     const updated = await prisma.dailyTask.update({

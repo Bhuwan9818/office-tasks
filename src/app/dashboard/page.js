@@ -3,14 +3,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 const USER_COLORS = {
-  aman: { color: '#5b8dee', dim: 'rgba(91,141,238,0.12)', dark: 'rgba(91,141,238,0.08)' },
-  anjali: { color: '#3ecf8e', dim: 'rgba(62,207,142,0.12)', dark: 'rgba(62,207,142,0.08)' },
-  bhuwan: { color: '#f5a623', dim: 'rgba(245,166,35,0.12)', dark: 'rgba(245,166,35,0.08)' },
+  P1: { color: '#5b8dee', dim: 'rgba(91,141,238,0.12)', dark: 'rgba(91,141,238,0.08)' },
+  P2: { color: '#3ecf8e', dim: 'rgba(62,207,142,0.12)', dark: 'rgba(62,207,142,0.08)' },
+  P3: { color: '#f5a623', dim: 'rgba(245,166,35,0.12)', dark: 'rgba(245,166,35,0.08)' },
 };
 
 function UserBadge({ name, size = 'md', pulse = false }) {
   const c = USER_COLORS[name] || { color: '#888', dim: 'rgba(136,136,136,0.12)' };
-  const sz = size === 'lg' ? { w: 60, h: 60, f: 14 } : size === 'sm' ? { w: 40, h: 40, f: 12 } : { w: 50, h: 50, f: 10 };
+  const sz = size === 'lg' ? { w: 44, h: 44, f: 18 } : size === 'sm' ? { w: 28, h: 28, f: 12 } : { w: 36, h: 36, f: 14 };
   return (
     <div
       style={{
@@ -181,7 +181,16 @@ export default function DashboardPage() {
     );
   }
 
-  if (status?.isSundayOff) {
+  // Unified blocked screen — handles Sunday, before 9am, after 7pm
+  if (status?.blocked) {
+    const icons = {
+      SUNDAY: '🌴',
+      BEFORE_HOURS: '☀️',
+      AFTER_HOURS: '🌙',
+    };
+    const icon = icons[status.blockCode] || '🔒';
+    const isSunday = status.blockCode === 'SUNDAY';
+
     return (
       <div
         style={{
@@ -191,7 +200,6 @@ export default function DashboardPage() {
           alignItems: 'center',
           justifyContent: 'center',
           flexDirection: 'column',
-          gap: '0',
           padding: '20px',
           textAlign: 'center',
         }}
@@ -201,8 +209,8 @@ export default function DashboardPage() {
             width: '80px',
             height: '80px',
             borderRadius: '20px',
-            background: 'rgba(245,166,35,0.1)',
-            border: '1px solid rgba(245,166,35,0.3)',
+            background: isSunday ? 'rgba(245,166,35,0.1)' : 'rgba(91,141,238,0.1)',
+            border: `1px solid ${isSunday ? 'rgba(245,166,35,0.3)' : 'rgba(91,141,238,0.3)'}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -210,21 +218,27 @@ export default function DashboardPage() {
             marginBottom: '24px',
           }}
         >
-          🌴
+          {icon}
         </div>
-        <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 8px', letterSpacing: '-0.02em' }}>
-          Sunday Off!
+        <h1 style={{ fontSize: '26px', fontWeight: '800', margin: '0 0 10px', letterSpacing: '-0.02em' }}>
+          {isSunday ? 'Sunday Off!' : status.blockCode === 'BEFORE_HOURS' ? 'Not Open Yet' : 'Closed for the Day'}
         </h1>
-        <p style={{ color: 'var(--text-muted)', margin: '0 0 32px', fontSize: '15px' }}>
-          No tasks today. The app resumes Monday.
+        <p style={{ color: 'var(--text-muted)', margin: '0 0 8px', fontSize: '15px', maxWidth: '280px' }}>
+          {status.blockMessage}
         </p>
+        {!isSunday && (
+          <p style={{ color: 'var(--text-muted)', margin: '0 0 32px', fontSize: '13px', fontFamily: 'DM Mono, monospace' }}>
+            Working hours: 9:00 AM – 7:00 PM
+          </p>
+        )}
         <div
           style={{
             background: 'var(--surface)',
             border: '1px solid var(--border)',
             borderRadius: '12px',
-            padding: '14px 24px',
+            padding: '12px 24px',
             marginBottom: '24px',
+            marginTop: isSunday ? '32px' : '0',
           }}
         >
           <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', fontFamily: 'DM Mono, monospace' }}>
@@ -232,12 +246,13 @@ export default function DashboardPage() {
             <span style={{ color: USER_COLORS[status.currentUser?.name]?.color, fontWeight: '700' }}>
               {status.currentUser?.name}
             </span>
-            {' '}· {status.today}
+            {' · '}{status.today}
           </p>
         </div>
         <button onClick={handleLogout} className="btn btn-ghost" style={{ fontSize: '14px' }}>
           Sign Out
         </button>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -487,7 +502,7 @@ export default function DashboardPage() {
               justifyContent: 'center',
             }}
           >
-            {['aman', 'anjali', 'bhuwan'].map((name, i) => {
+            {['P1', 'P2', 'P3'].map((name, i) => {
               const isNext = name === status?.nextFillUser;
               const c = USER_COLORS[name];
               return (
@@ -525,13 +540,15 @@ export default function DashboardPage() {
           <button
             className="btn btn-primary"
             onClick={handleFill}
-            disabled={!isMyTurnToFill || actionLoading === 'fill'}
+            disabled={!isMyTurnToFill || !status?.isWashed || actionLoading === 'fill'}
             style={{ width: '100%' }}
           >
             {actionLoading === 'fill' ? (
               'Logging...'
+            ) : !status?.isWashed ? (
+              `🔒 Waiting for ${status?.washer?.name} to wash first`
             ) : isMyTurnToFill ? (
-              '💧 Fill Water — It\'s My Turn!'
+              "💧 Fill Water — It's My Turn!"
             ) : (
               `💧 Waiting for ${status?.nextFillUser}`
             )}
@@ -688,7 +705,7 @@ export default function DashboardPage() {
               </p>
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {[0, 1, 2].map((offset) => {
-                  const users = ['aman', 'anjali', 'bhuwan'];
+                  const users = ['P1', 'P2', 'P3'];
                   const washerIdx = users.indexOf(status.washer?.name);
                   const nextIdx = (washerIdx + status.fillCount + offset) % 3;
                   const name = users[nextIdx];
