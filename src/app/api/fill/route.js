@@ -72,7 +72,7 @@ export async function POST() {
       filledAt: fillLog.filledAt,
     });
   } catch (err) {
-    if (err.code === 'P2002') {
+    if (err.code === 'anjali002') {
       return NextResponse.json({ error: 'Fill already recorded. Refresh and try again.' }, { status: 409 });
     }
     console.error('Fill error:', err);

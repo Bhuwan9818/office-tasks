@@ -36,20 +36,20 @@ export function getBlockReason(date = new Date()) {
 }
 
 /**
- * Returns the washer name (P1, P2, P3) for a given date.
- * Rotation: Monday→P1, Tuesday→P2, Wednesday→P3, Thursday→P1, Friday→P2, Saturday→P3
+ * Returns the washer name (aman, anjali, bhuwan) for a given date.
+ * Rotation: Monday→aman, Tuesday→anjali, Wednesday→bhuwan, Thursday→aman, Friday→anjali, Saturday→bhuwan
  */
 export function getTodayWasherName(date = new Date()) {
   const dayOfWeek = date.getDay();
   const dayMap = {
-    1: 0, // Monday    → P1
-    2: 1, // Tuesday   → P2
-    3: 2, // Wednesday → P3
-    4: 0, // Thursday  → P1
-    5: 1, // Friday    → P2
-    6: 2, // Saturday  → P3
+    1: 0, // Monday    → aman
+    2: 1, // Tuesday   → anjali
+    3: 2, // Wednesday → bhuwan
+    4: 0, // Thursday  → aman
+    5: 1, // Friday    → anjali
+    6: 2, // Saturday  → bhuwan
   };
-  const names = ['P1', 'P2', 'P3'];
+  const names = ['aman', 'anjali', 'bhuwan'];
   return names[dayMap[dayOfWeek]];
 }
 
@@ -57,7 +57,7 @@ export function getTodayWasherName(date = new Date()) {
  * Returns who should fill next based on washer + fills done so far.
  */
 export function getNextFillUserName(washerName, fillCount) {
-  const names = ['P1', 'P2', 'P3'];
+  const names = ['aman', 'anjali', 'bhuwan'];
   const washerIndex = names.indexOf(washerName);
   if (washerIndex === -1) throw new Error('Unknown washer: ' + washerName);
   const nextIndex = (washerIndex + fillCount) % 3;

@@ -3,9 +3,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 const USER_COLORS = {
-  P1: { color: '#5b8dee', dim: 'rgba(91,141,238,0.12)', dark: 'rgba(91,141,238,0.08)' },
-  P2: { color: '#3ecf8e', dim: 'rgba(62,207,142,0.12)', dark: 'rgba(62,207,142,0.08)' },
-  P3: { color: '#f5a623', dim: 'rgba(245,166,35,0.12)', dark: 'rgba(245,166,35,0.08)' },
+  aman: { color: '#5b8dee', dim: 'rgba(91,141,238,0.12)', dark: 'rgba(91,141,238,0.08)' },
+  anjali: { color: '#3ecf8e', dim: 'rgba(62,207,142,0.12)', dark: 'rgba(62,207,142,0.08)' },
+  bhuwan: { color: '#f5a623', dim: 'rgba(245,166,35,0.12)', dark: 'rgba(245,166,35,0.08)' },
 };
 
 function UserBadge({ name, size = 'md', pulse = false }) {
@@ -502,7 +502,7 @@ export default function DashboardPage() {
               justifyContent: 'center',
             }}
           >
-            {['P1', 'P2', 'P3'].map((name, i) => {
+            {['aman', 'anjali', 'bhuwan'].map((name, i) => {
               const isNext = name === status?.nextFillUser;
               const c = USER_COLORS[name];
               return (
@@ -705,7 +705,7 @@ export default function DashboardPage() {
               </p>
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {[0, 1, 2].map((offset) => {
-                  const users = ['P1', 'P2', 'P3'];
+                  const users = ['aman', 'anjali', 'bhuwan'];
                   const washerIdx = users.indexOf(status.washer?.name);
                   const nextIdx = (washerIdx + status.fillCount + offset) % 3;
                   const name = users[nextIdx];
