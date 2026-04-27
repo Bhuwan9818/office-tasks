@@ -4,24 +4,39 @@
 /**
  * Returns true if the given date is a Sunday (day off).
  */
-export function isSunday(date = new Date()) {
+export function isSunday() {
+  const date = getIndianTime();
   return date.getDay() === 0;
 }
 
 /**
  * Returns true if current time is outside working hours (9am–7pm).
  */
-export function isOffHours(date = new Date()) {
+export function isOffHours() {
+  const date = getIndianTime();
   const hour = date.getHours();
   return hour < 9 || hour >= 19;
 }
+
+function getIndianTime() {
+  const now = new Date();
+  const istTime = new Date(
+    now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+  );
+  return istTime;
+}
+
+const date = getIndianTime();
+const hour = date.getHours();
+
 
 /**
  * Returns a block reason object if the app is locked right now.
  * Returns null if the app is open and usable.
  * Checked in EVERY API route and in the UI.
  */
-export function getBlockReason(date = new Date()) {
+export function getBlockReason() {
+  const date = getIndianTime();
   if (isSunday(date)) {
     return { code: 'SUNDAY', message: 'Today is Sunday — enjoy your day off! 🌴' };
   }
