@@ -15,7 +15,7 @@ export function isSunday() {
 export function isOffHours() {
   const date = getIndianTime();
   const hour = date.getHours();
-  return hour < 9 || hour >= 19;
+  return hour < 12 || hour >= 19;
 }
 
 function getIndianTime() {
@@ -42,10 +42,10 @@ export function getBlockReason() {
   }
   if (isOffHours(date)) {
     const hour = date.getHours();
-    if (hour < 9) {
-      return { code: 'BEFORE_HOURS', message: `${hour}:00 AM - App opens at 9:00 AM. Come back soon! ☀️` };
+    if (hour < 12) {
+      return { code: 'BEFORE_HOURS', message: `${hour}:00 AM - App opens at 12:00 PM. Come back soon! ☀️` };
     }
-    return { code: 'AFTER_HOURS', message: 'App is closed for the day. See you tomorrow at 9 AM! 🌙' };
+    return { code: 'AFTER_HOURS', message: 'App is closed for the day. See you tomorrow at 12:00 PM! 🌙' };
   }
   return null;
 }
