@@ -13,7 +13,6 @@ export function isSunday(date = new Date()) {
  */
 export function isOffHours(date = new Date()) {
   const hour = date.getHours();
-  alert('Current hour:', hour);
   return hour < 9 || hour >= 19;
 }
 
@@ -29,7 +28,7 @@ export function getBlockReason(date = new Date()) {
   if (isOffHours(date)) {
     const hour = date.getHours();
     if (hour < 9) {
-      return { code: 'BEFORE_HOURS', message: 'App opens at 9:00 AM. Come back soon! ☀️' };
+      return { code: 'BEFORE_HOURS', message: `${hour}:00 AM - App opens at 9:00 AM. Come back soon! ☀️` };
     }
     return { code: 'AFTER_HOURS', message: 'App is closed for the day. See you tomorrow at 9 AM! 🌙' };
   }
