@@ -13,7 +13,7 @@ export function isSunday(date = new Date()) {
  */
 export function isOffHours(date = new Date()) {
   const hour = date.getHours();
-  console.log('Current hour:', hour);
+  alert('Current hour:', hour);
   return hour < 9 || hour >= 19;
 }
 
